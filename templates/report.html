@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>
+  <ul class="nav nav-pills">
+    <li><a href="{{ app.request.uri }}.css"><span class="glyphicon glyphicon-download"></span> Original CSS</a></li>
+    <li><a href="{{ app.request.uri }}.json"><span class="glyphicon glyphicon-download"></span> JSON Report</a></li>
+  </ul>
+</p>
+
+<table class="table table-bordered table-hover table-condensed">
+  <thead>
+    <tr class="success"><th>CSS Detail</th><th>Total</th><th>Total (unique values only)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Selectors</td>
+      <td>{{ summary.selectors|length }}</td>
+      <td>{{ summary.unique_selectors|length }}</td>
+    </tr>
+    </tr>
+    <tr>
+      <td>Declarations (Properties and Values)</td>
+      <td>{{ summary.declarations|length }}</td>
+      <td>{{ summary.unique_declarations|length }}</td>
+    </tr>
+    <tr>
+    <tr>
+      <td>Colors in HEX notation</td>
+      <td>{{ summary.colors|length }}</td>
+      <td>{{ summary.unique_colors|length }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Properties</h4>
+<div class="row">
+{% for property in summary.unique_declarations|sort %}
+  <div class="col-sm-3">{{ property|e }}</div>
+{% endfor %}
+</div>
+
+<h4>Palette</h4>
+<div class="row">
+{% for color in summary.unique_colors|sort %}
+  <div class="col-sm-1" style="background-color: {{ color|e }}">{{ color|e }}</div>
+{% endfor %}
+</div>
+{% endblock %}

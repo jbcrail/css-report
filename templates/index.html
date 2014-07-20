@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form class="form-horizontal" role="form" action="/" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label for="css" class="control-label">Select a CSS to analyze</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-12">
+      <input type="file" id="css" name="css">
+      <p class="help-block">The uploaded CSS file size is limited to 2MB.</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-12">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

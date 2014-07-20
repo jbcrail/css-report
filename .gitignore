@@ -1,0 +1,6 @@
+/var
+/web/assets/
+/web/uploads/
+/vendor/
+composer.lock
+composer.phar
