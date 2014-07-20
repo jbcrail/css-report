@@ -86,6 +86,19 @@ $app->post('/', function (Request $request) use ($app) {
     $app->abort(500, "Exceeded filesize limit");
   }
 
+  // Since the file extension and mimetype of the uploaded file is not
+  // reliable, we can't use these values. Since CSS must be encoded in
+  // UTF-8, then we check to see if the uploaded file is encoded in
+  // ASCII or UTF-8.
+  //
+  // Also, finfo_file() and mime_content_type() are not reliable
+  // mimetype detectors.
+  $encodings[] = "ASCII";
+  $encodings[] = "UTF-8";
+  if (mb_detect_encoding(file_get_contents($file['tmp_name']), $encodings) === FALSE) {
+    $app->abort(500, "Illegal encoding of the uploaded CSS file");
+  }
+
   // Calculate SHA-1 of uploaded file
   $hash = sha1_file($file['tmp_name']);
   $uploaded_css = sprintf('%s/%s.css', $app['upload_path'], $hash);
