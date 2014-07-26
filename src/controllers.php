@@ -34,11 +34,11 @@ $app->get('/{hash}', function (Request $request, $hash) use ($app) {
   $summary->unique_declarations = array_unique(array_map($fnGetProperty, $summary->declarations));
   $summary->unique_colors = array_unique($summary->colors);
 
-  return $app['twig']->render('report.html', array('title' => 'CSS Report', 'summary' => $summary));
+  return $app['twig']->render('report.html', array('title' => $app['site.title'], 'summary' => $summary));
 });
 
 $app->get('/', function (Request $request) use ($app) {
-  return $app['twig']->render('index.html', array('title' => 'CSS Report'));
+  return $app['twig']->render('index.html', array('title' => $app['site.title']));
 });
 
 $app->post('/', function (Request $request) use ($app) {
@@ -124,6 +124,15 @@ $app->post('/', function (Request $request) use ($app) {
 
   // If using PHP 5.4 or higher, pretty print JSON
   $json = (PHP_VERSION_ID < 50400) ? json_encode($report) : json_encode($report, JSON_PRETTY_PRINT);
+  if ($json === FALSE) {
+    // If JSON fails to encode, create default report
+    $report = array(
+      'selectors' => array(),
+      'declarations' => array(),
+      'colors' => array()
+    );
+    $json = (PHP_VERSION_ID < 50400) ? json_encode($report) : json_encode($report, JSON_PRETTY_PRINT);
+  }
   file_put_contents($uploaded_json, $json);
 
   return $app->redirect('/'.$hash);
@@ -142,5 +151,5 @@ $app->error(function (\Exception $e, $code) use ($app) {
     'errors/default.html',
   );
 
-  return new Response($app['twig']->resolveTemplate($templates)->render(array('code' => $code)), $code);
+  return new Response($app['twig']->resolveTemplate($templates)->render(array('title' => $app['site.title'], 'code' => $code, 'message' => $e->getMessage())), $code);
 });

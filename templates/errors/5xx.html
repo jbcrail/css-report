@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    An error occurred on the server.
+<p>An error occurred on the server:</p>
+<blockquote><pre>{{ message|e }}</pre></blockquote>
 {% endblock %}

@@ -110,7 +110,7 @@ class CssParser
     $colors = array();
     foreach ($this->declarations as $declaration) {
       foreach (preg_split("/[\s]+/", $declaration['value']) as $word) {
-        if ($word[0] === "#") {
+        if (isset($word[0]) && $word[0] === "#") {
           $colors[] = $word;
         }
       }

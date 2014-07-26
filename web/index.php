@@ -26,6 +26,7 @@ $app['twig.path'] = array(__DIR__.'/../templates');
 $app['twig.options'] = array('cache' => __DIR__.'/../var/cache/twig');
 $app['upload_path'] = __DIR__.'/../web/uploads';
 $app['upload_max_size'] = 2*1024*1024;
+$app['site.title'] = "CSS Report";
 $app['debug'] = true;
 
 require __DIR__.'/../src/controllers.php';
