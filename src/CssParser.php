@@ -20,14 +20,19 @@ class CssParser
   const STATE_PROPERTY = 1;
   const STATE_VALUE    = 2;
 
-  private $SELECTOR_END     = "{";
-  private $PROPERTY_END     = ":";
-  private $DECLARATION_END  = ";";
-  private $BLOCK_END        = "}";
+  const END_SELECTOR     = "{";
+  const END_PROPERTY     = ":";
+  const END_DECLARATION  = ";";
+  const END_BLOCK        = "}";
+
+  const CHUNK_SIZE = 16*1024;
+
+  private $selectors = array();
+  private $declarations = array();
 
   private function strip_comments($str)
   {
-    while (($pos = strpos($str, "/*")) !== FALSE) {
+    while (($pos = strpos($str, "/*")) !== false) {
       $pos2 = strpos($str, "*/");
       $str = substr_replace($str, "", $pos, $pos2-$pos+2);
     }
@@ -36,54 +41,51 @@ class CssParser
 
   private function parse_selector($str)
   {
-    return array_map('trim', explode(",", self::strip_comments($str)));
+    return array_map('trim', explode(",", $this->strip_comments($str)));
   }
 
   private function parse_property($str)
   {
-    return trim(self::strip_comments($str));
+    return trim($this->strip_comments($str));
   }
 
   private function parse_value($str)
   {
-    return trim(self::strip_comments($str));
+    return trim($this->strip_comments($str));
   }
 
   public function __construct($filename)
   {
-    $this->selectors = array();
-    $this->declarations = array();
-
     $state = self::STATE_SELECTOR;
     $token = "";
 
     $f = fopen($filename, "rb");
     while (!feof($f)) {
-      $contents = fread($f, 16*1024);
+      $contents = fread($f, self::CHUNK_SIZE);
       $len = strlen($contents);
       for ($i = 0; $i < $len; $i++) {
-        if ($state === self::STATE_SELECTOR && $contents[$i] === $this->SELECTOR_END) {
+        if ($state === self::STATE_SELECTOR && $contents[$i] === self::END_SELECTOR) {
           $state = self::STATE_PROPERTY;
-          $this->selectors = array_merge($this->selectors, self::parse_selector($token));
+          $this->selectors = array_merge($this->selectors, $this->parse_selector($token));
           $token = "";
         } else if ($state === self::STATE_SELECTOR) {
           $token .= $contents[$i];
-        } else if ($state === self::STATE_PROPERTY && $contents[$i] === $this->PROPERTY_END) {
+        } else if ($state === self::STATE_PROPERTY && $contents[$i] === self::END_PROPERTY) {
           $state = self::STATE_VALUE;
-          $property = self::parse_property($token);
+          $property = $this->parse_property($token);
           $token = "";
-        } else if ($state === self::STATE_PROPERTY && $contents[$i] === $this->BLOCK_END) {
+        } else if ($state === self::STATE_PROPERTY && $contents[$i] === self::END_BLOCK) {
           $state = self::STATE_SELECTOR;
           $token = "";
         } else if ($state === self::STATE_PROPERTY) {
           $token .= $contents[$i];
-        } else if ($state === self::STATE_VALUE && $contents[$i] === $this->DECLARATION_END) {
+        } else if ($state === self::STATE_VALUE && $contents[$i] === self::END_DECLARATION) {
           $state = self::STATE_PROPERTY;
-          $this->declarations[] = array("property" => $property, "value" => self::parse_value($token));
+          $this->declarations[] = array("property" => $property, "value" => $this->parse_value($token));
           $token = "";
-        } else if ($state === self::STATE_VALUE && $contents[$i] === $this->BLOCK_END) {
+        } else if ($state === self::STATE_VALUE && $contents[$i] === self::END_BLOCK) {
           $state = self::STATE_SELECTOR;
-          $this->declarations[] = array("property" => $property, "value" => self::parse_value($token));
+          $this->declarations[] = array("property" => $property, "value" => $this->parse_value($token));
           $token = "";
         } else if ($state === self::STATE_VALUE) {
           $token .= $contents[$i];

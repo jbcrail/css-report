@@ -30,8 +30,7 @@ $app->get('/{hash}', function (Request $request, $hash) use ($app) {
 
   $summary = json_decode(file_get_contents($uploaded_json));
   $summary->unique_selectors = array_unique($summary->selectors);
-  $fnGetProperty = function($decl) { return $decl->property; };
-  $summary->unique_declarations = array_unique(array_map($fnGetProperty, $summary->declarations));
+  $summary->unique_declarations = array_unique(array_map(function($decl) { return $decl->property; }, $summary->declarations));
   $summary->unique_colors = array_unique($summary->colors);
 
   return $app['twig']->render('report.html', array('title' => $app['site.title'], 'summary' => $summary));
@@ -93,9 +92,10 @@ $app->post('/', function (Request $request) use ($app) {
   //
   // Also, finfo_file() and mime_content_type() are not reliable
   // mimetype detectors.
+  $encodings = array();
   $encodings[] = "ASCII";
   $encodings[] = "UTF-8";
-  if (mb_detect_encoding(file_get_contents($file['tmp_name']), $encodings) === FALSE) {
+  if (mb_detect_encoding(file_get_contents($file['tmp_name']), $encodings) === false) {
     $app->abort(500, "Illegal encoding of the uploaded CSS file");
   }
 
@@ -124,7 +124,7 @@ $app->post('/', function (Request $request) use ($app) {
 
   // If using PHP 5.4 or higher, pretty print JSON
   $json = (PHP_VERSION_ID < 50400) ? json_encode($report) : json_encode($report, JSON_PRETTY_PRINT);
-  if ($json === FALSE) {
+  if ($json === false) {
     // If JSON fails to encode, create default report
     $report = array(
       'selectors' => array(),
