@@ -113,7 +113,7 @@ class CssParser
     foreach ($this->declarations as $declaration) {
       foreach (preg_split("/[\s]+/", $declaration['value']) as $word) {
         if (isset($word[0]) && $word[0] === "#") {
-          $colors[] = $word;
+          $colors[] = substr($word, 0, 7);
         }
       }
     }
