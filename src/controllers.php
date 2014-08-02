@@ -119,7 +119,7 @@ $app->post('/', function (Request $request) use ($app) {
   $report = array(
     'selectors' => $parser->getSelectors(),
     'declarations' => $parser->getDeclarations(),
-    'colors' => $parser->getColors()
+    'colors' => $parser->getColorsSortedByHSV()
   );
 
   // If using PHP 5.4 or higher, pretty print JSON

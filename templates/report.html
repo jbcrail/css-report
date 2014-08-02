@@ -40,7 +40,7 @@
 
 <h4>Palette</h4>
 <div class="row">
-{% for color in summary.unique_colors|sort %}
+{% for color in summary.unique_colors %}
   <div class="col-sm-1" style="background-color: {{ color|e }}">{{ color|e }}</div>
 {% endfor %}
 </div>

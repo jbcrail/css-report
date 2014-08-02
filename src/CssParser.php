@@ -127,4 +127,20 @@ class CssParser
     }
     return $colors;
   }
+
+  public function getColorsSortedByHSV()
+  {
+    $colors = $this->getColors();
+    $hsv = array();
+
+    foreach ($colors as $color) {
+      $red   = hexdec(substr($color, 1, 2));
+      $green = hexdec(substr($color, 3, 2));
+      $blue  = hexdec(substr($color, 5, 2));
+      $hsv[$color] = RGB::to_hsv($red, $green, $blue);
+    }
+
+    asort($hsv);
+    return array_keys($hsv);
+  }
 }
