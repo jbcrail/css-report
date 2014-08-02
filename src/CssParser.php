@@ -25,7 +25,7 @@ class CssParser
   const END_DECLARATION  = ";";
   const END_BLOCK        = "}";
 
-  const CHUNK_SIZE = 16*1024;
+  const CHUNK_SIZE = 16384;
 
   private $selectors = array();
   private $declarations = array();
