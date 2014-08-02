@@ -113,7 +113,15 @@ class CssParser
     foreach ($this->declarations as $declaration) {
       foreach (preg_split("/[\s]+/", $declaration['value']) as $word) {
         if (isset($word[0]) && $word[0] === "#") {
-          $colors[] = substr($word, 0, 7);
+          $matches = array();
+          if (preg_match("/^#([0-9A-F]+)/", strtoupper($word), $matches) === 1) {
+            $rgb = $matches[1];
+            if (strlen($rgb) === 3) {
+              $colors[] = "#".$rgb[0].$rgb[0].$rgb[1].$rgb[1].$rgb[2].$rgb[2];
+            } else {
+              $colors[] = "#{$rgb}";
+            }
+          }
         }
       }
     }
